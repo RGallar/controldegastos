@@ -1,4 +1,4 @@
-:root {
+:root { 
   --bg: #ffffff;
   --fg: #333333;
   --accent: #28a745;
@@ -141,4 +141,32 @@ li span {
     display: flex;
     gap: 5px;
   }
+}
+
+/* Estilos para modo móvil activado con clase .mobile */
+body.mobile .container {
+  max-width: 100%;
+  padding: 10px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.mobile header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+body.mobile button#modoToggle {
+  align-self: flex-end;
+}
+
+body.mobile input,
+body.mobile button {
+  font-size: 1.1em;
+}
+
+body.mobile ul li {
+  font-size: 1.1em;
+  padding: 10px 5px;
 }

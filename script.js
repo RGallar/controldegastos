@@ -150,3 +150,17 @@ function cargarTema() {
 // Inicialización
 cargarTema();
 cargarDatos();
+
+function detectarCelular() {
+  const esMobile = window.innerWidth <= 600 || /Mobi|Android/i.test(navigator.userAgent);
+  if (esMobile) {
+    document.body.classList.add('mobile');
+  } else {
+    document.body.classList.remove('mobile');
+  }
+}
+
+// Detectar al cargar y al redimensionar
+detectarCelular();
+window.addEventListener('resize', detectarCelular);
+
