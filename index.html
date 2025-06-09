@@ -2,39 +2,36 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gestor de Presupuesto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💰 Control de Gastos</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
-    <h1>💸 Gestor de Presupuesto Mensual</h1>
+  <div class="container">
+    <header>
+      <h1>💰 Control de Gastos</h1>
+      <button id="modoToggle" onclick="cambiarModo()">🌙</button>
+    </header>
 
-    <section class="saldo-control">
-      <label for="saldo">Saldo inicial (CLP):</label>
-      <input type="number" id="saldo" value="700000" />
-      <button onclick="actualizarSaldo()">Actualizar</button>
-
-      <label for="agregarSaldo">Agregar saldo:</label>
-      <input type="number" id="agregarSaldo" placeholder="Ej: 20000" />
-      <button onclick="sumarSaldo()">Sumar</button>
+    <section class="saldo-inicial">
+      <label for="saldo">Saldo Inicial:</label>
+      <input type="number" id="saldo" placeholder="Ej: 700000" />
+      <button onclick="establecerSaldo()">Actualizar Saldo</button>
     </section>
 
-    <section class="gasto-control">
+    <div id="saldoRestante">Saldo Restante: $0</div>
+
+    <section class="form-gasto">
       <h2>Agregar Gasto</h2>
-      <input type="text" id="nombreGasto" placeholder="Nombre del gasto" />
-      <input type="number" id="montoGasto" placeholder="Monto CLP" />
-      <button onclick="agregarGasto()">Agregar gasto</button>
+      <input type="text" id="descripcion" placeholder="Descripción" />
+      <input type="number" id="monto" placeholder="Monto del gasto" />
+      <button onclick="agregarGasto()">Agregar</button>
     </section>
 
-    <section class="resumen">
-      <h2>💼 Gastos Registrados</h2>
-      <ul id="listaGastos"></ul>
-      <h3>💰 Saldo restante: <span id="saldoRestante">700000</span> CLP</h3>
-    </section>
+    <h2>🧾 Lista de Gastos</h2>
+    <ul id="listaGastos"></ul>
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
