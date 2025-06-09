@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestor de Presupuesto</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <h1>💸 Gestor de Presupuesto Mensual</h1>
+
+    <section class="saldo-control">
+      <label for="saldo">Saldo inicial (CLP):</label>
+      <input type="number" id="saldo" value="700000" />
+      <button onclick="actualizarSaldo()">Actualizar</button>
+
+      <label for="agregarSaldo">Agregar saldo:</label>
+      <input type="number" id="agregarSaldo" placeholder="Ej: 20000" />
+      <button onclick="sumarSaldo()">Sumar</button>
+    </section>
+
+    <section class="gasto-control">
+      <h2>Agregar Gasto</h2>
+      <input type="text" id="nombreGasto" placeholder="Nombre del gasto" />
+      <input type="number" id="montoGasto" placeholder="Monto CLP" />
+      <button onclick="agregarGasto()">Agregar gasto</button>
+    </section>
+
+    <section class="resumen">
+      <h2>💼 Gastos Registrados</h2>
+      <ul id="listaGastos"></ul>
+      <h3>💰 Saldo restante: <span id="saldoRestante">700000</span> CLP</h3>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
