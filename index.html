@@ -1,37 +1,231 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>💰 Control de Gastos</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Cotizaciones UF</title>
+    <style>
+        :root {
+            --primary: #0369a1;
+            --accent: #0ea5e9;
+            --danger: #be123c;
+            --success: #15803d;
+            --bg: #f1f5f9;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); padding: 15px; color: #334155; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        section { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px; }
+
+        /* Contador */
+        .counter-box { display: flex; align-items: center; justify-content: center; gap: 20px; background: #f8fafc; padding: 15px; border-radius: 12px; }
+        .counter-val { font-size: 2rem; font-weight: 800; color: var(--primary); min-width: 60px; text-align: center; }
+
+        /* Grid de Inputs */
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: 600; font-size: 0.9rem; color: #64748b; }
+        input { padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; transition: border-color 0.2s; font-size: 1rem; }
+        input:focus { border-color: var(--accent); }
+        
+        .flex-inputs { display: flex; gap: 10px; }
+        .flex-inputs input { width: 50%; }
+
+        /* Botones */
+        button { cursor: pointer; padding: 12px 20px; border: none; border-radius: 8px; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        button:active { transform: scale(0.98); }
+        .btn-add { background: var(--primary); color: white; width: 100%; margin-top: 20px; font-size: 1rem; }
+        .btn-add:hover { background: #075985; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-toggle { background: #e2e8f0; color: #475569; }
+
+        /* Resumen */
+        .resumen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .card-val { background: #f8fafc; padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent); }
+        .card-val span { display: block; font-size: 1.2rem; font-weight: 800; color: #1e293b; margin-top: 5px; }
+        .card-highlight { background: #f0fdf4; border-left-color: var(--success); }
+
+        /* Lista */
+        .historial-list { margin-top: 20px; max-height: 400px; overflow-y: auto; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        .hidden { display: none; }
+        
+        @media (max-width: 600px) {
+            .grid-inputs { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>💰 Control de Gastos</h1>
-      <button id="modoToggle" onclick="cambiarModo()">🌙</button>
-    </header>
 
-    <section class="saldo-inicial">
-      <label for="saldo">Saldo Inicial:</label>
-      <input type="number" id="saldo" placeholder="Ej: 700000" />
-      <button onclick="establecerSaldo()">Actualizar Saldo</button>
+<div class="container">
+    <section>
+        <h2>🔢 Contador de Unidades</h2>
+        <div class="counter-box">
+            <button class="btn-danger" onclick="changeCounter(-1)" style="padding: 10px 20px;">-</button>
+            <span id="counterValue" class="counter-val">0</span>
+            <button style="background: var(--success); color: white;" onclick="changeCounter(1)">+</button>
+        </div>
     </section>
 
-    <div id="saldoRestante">Saldo Restante: $0</div>
-
-    <section class="form-gasto">
-      <h2>Agregar Gasto</h2>
-      <input type="text" id="descripcion" placeholder="Descripción" />
-      <input type="number" id="monto" placeholder="Monto del gasto" />
-      <button onclick="agregarGasto()">Agregar</button>
+    <section>
+        <h2>📝 Registro de Operación (UF)</h2>
+        <div class="grid-inputs">
+            
+            <div class="input-group">
+                <label>Cotización y Tiempo</label>
+                <div class="flex-inputs">
+                    <input type="number" id="inCotizacion" step="0.01" placeholder="Monto UF">
+                    <input type="number" id="inTiempo" placeholder="Meses/Días">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Total Traslado (UF)</label>
+                <input type="number" id="inTraslado" step="0.01" placeholder="0.00 UF">
+            </div>
+        </div>
+        <button class="btn-add" onclick="registrarDatos()">
+            💾 Guardar Registro en UF
+        </button>
     </section>
 
-    <h2>🧾 Lista de Gastos</h2>
-    <ul id="listaGastos"></ul>
-  </div>
+    <section>
+        <h2>📊 Resumen de Totales Acumulados</h2>
+        <div class="resumen-grid">
+            <div class="card-val">Total Cotización <span id="resCotiz">0.00 UF</span></div>
+            <div class="card-val">Total Traslado <span id="resTrasl">0.00 UF</span></div>
+            <div class="card-val">Total Neto (Menos Transp.) <span id="resNeto">0.00 UF</span></div>
+            <div class="card-val card-highlight">Total Negocio Final <span id="resNegocio">0.00 UF</span></div>
+        </div>
+    </section>
 
-  <script src="script.js"></script>
+    <section>
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <button class="btn-toggle" onclick="toggleHistorial()">👁️ Ver / Ocultar Historial</button>
+            <button class="btn-danger" onclick="borrarTodo()">⚠️ Borrar Base de Datos</button>
+        </div>
+        
+        <div id="listaRegistros" class="historial-list hidden">
+            </div>
+    </section>
+</div>
+
+<script>
+    // Estado inicial desde LocalStorage
+    let registros = JSON.parse(localStorage.getItem('uf_app_data')) || [];
+    let contador = parseInt(localStorage.getItem('uf_app_counter')) || 0;
+
+    // Ejecutar al cargar
+    actualizarVista();
+
+    // --- SECCIÓN 1: CONTADOR ---
+    function changeCounter(val) {
+        contador += val;
+        localStorage.setItem('uf_app_counter', contador);
+        actualizarVista();
+    }
+
+    // --- SECCIÓN 2 & 3: REGISTRO Y CÁLCULOS ---
+    function registrarDatos() {
+        const cotiz = parseFloat(document.getElementById('inCotizacion').value) || 0;
+        const trasl = parseFloat(document.getElementById('inTraslado').value) || 0;
+        const tiempo = parseFloat(document.getElementById('inTiempo').value) || 0;
+
+        if (cotiz <= 0 && trasl <= 0) {
+            alert("Por favor, ingrese montos válidos en UF.");
+            return;
+        }
+
+        // Fórmulas solicitadas
+        const neto = cotiz - trasl;
+        const negocio = neto * tiempo;
+
+        const nuevoRegistro = {
+            id: Date.now(),
+            cotizacion: cotiz,
+            traslado: trasl,
+            tiempo: tiempo,
+            neto: neto,
+            negocio: negocio
+        };
+
+        registros.push(nuevoRegistro);
+        guardarYRefrescar();
+        limpiarInputs();
+    }
+
+    function guardarYRefrescar() {
+        localStorage.setItem('uf_app_data', JSON.stringify(registros));
+        actualizarVista();
+    }
+
+    function actualizarVista() {
+        // Actualizar contador
+        document.getElementById('counterValue').innerText = contador;
+
+        // Limpiar y poblar lista
+        const contenedorLista = document.getElementById('listaRegistros');
+        contenedorLista.innerHTML = '';
+
+        let acumuladoCotiz = 0;
+        let acumuladoTrasl = 0;
+        let acumuladoNeto = 0;
+        let acumuladoNegocio = 0;
+
+        registros.forEach((reg, index) => {
+            acumuladoCotiz += reg.cotizacion;
+            acumuladoTrasl += reg.traslado;
+            acumuladoNeto += reg.neto;
+            acumuladoNegocio += reg.negocio;
+
+            contenedorLista.innerHTML += `
+                <div class="list-item">
+                    <div>
+                        <strong>#${index + 1}</strong> | 
+                        Negocio: <b>${reg.negocio.toFixed(2)} UF</b> 
+                        <small style="color:#64748b">(Cot: ${reg.cotizacion} | Tras: ${reg.traslado} | T: ${reg.tiempo})</small>
+                    </div>
+                    <button class="btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="eliminarUno(${reg.id})">Eliminar</button>
+                </div>
+            `;
+        });
+
+        // Mostrar totales en la Sección 3
+        document.getElementById('resCotiz').innerText = `${acumuladoCotiz.toFixed(2)} UF`;
+        document.getElementById('resTrasl').innerText = `${acumuladoTrasl.toFixed(2)} UF`;
+        document.getElementById('resNeto').innerText = `${acumuladoNeto.toFixed(2)} UF`;
+        document.getElementById('resNegocio').innerText = `${acumuladoNegocio.toFixed(2)} UF`;
+    }
+
+    // --- SECCIÓN 4: BOTONES DE ACCIÓN ---
+    function eliminarUno(id) {
+        registros = registros.filter(r => r.id !== id);
+        guardarYRefrescar();
+    }
+
+    function borrarTodo() {
+        if(confirm("¿Estás seguro de eliminar TODOS los registros y reiniciar el contador?")) {
+            registros = [];
+            contador = 0;
+            localStorage.removeItem('uf_app_data');
+            localStorage.removeItem('uf_app_counter');
+            actualizarVista();
+        }
+    }
+
+    function toggleHistorial() {
+        const div = document.getElementById('listaRegistros');
+        div.classList.toggle('hidden');
+    }
+
+    function limpiarInputs() {
+        document.getElementById('inCotizacion').value = '';
+        document.getElementById('inTraslado').value = '';
+        document.getElementById('inTiempo').value = '';
+    }
+</script>
+
 </body>
 </html>
